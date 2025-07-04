@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Basic Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  .calculator {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #display {
+    width: 100%;
+    height: 50px;
+    font-size: 1.5em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: right;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  button {
+    padding: 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+  }
+  button.operator {
+    background-color: #ff9500;
+    color: #fff;
+  }
+  button.equals {
+    background-color: #4CAF50;
+    color: #fff;
+    grid-column: span 1;
+  }
+  button.clear {
+    background-color: #f44336;
+    color: #fff;
+    grid-column: span 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <input type="text" id="display" disabled />
+  <div class="buttons">
+    <button class="clear" id="clear">C</button>
+    <button class="operator" data-op="+">+</button>
+    <button class="operator" data-op="-">−</button>
+    <button class="operator" data-op="*">×</button>
+    <button class="operator" data-op="/">÷</button>
+    <button data-num="7">7</button>
+    <button data-num="8">8</button>
+    <button data-num="9">9</button>
+    <button class="equals">=</button>
+    <button data-num="4">4</button>
+    <button data-num="5">5</button>
+    <button data-num="6">6</button>
+    <button data-num="1">1</button>
+    <button data-num="2">2</button>
+    <button data-num="3">3</button>
+    <button data-num="0">0</button>
+    <button data-num=".">.</button>
+  </div>
+</div>
+
+<script>
+  const display = document.getElementById('display');
+  const buttons = document.querySelectorAll('button');
+
+  let currentInput = '';
+  let previousInput = '';
+  let operation = null;
+
+  function updateDisplay() {
+    display.value = currentInput || '0';
+  }
+
+  // Handle number and decimal button clicks
+  buttons.forEach(button => {
+    if (button.hasAttribute('data-num')) {
+      button.addEventListener('click', () => {
+        currentInput += button.getAttribute('data-num');
+        updateDisplay();
+      });
+    }
+  });
+
+  // Handle operator buttons
+  document.querySelectorAll('.operator').forEach(opBtn => {
+    opBtn.addEventListener('click', () => {
+      if (currentInput === '') return;
+      if (previousInput !== '') {
+        calculate();
+      }
+      operation = opBtn.getAttribute('data-op');
+      previousInput = currentInput;
+      currentInput = '';
+    });
+  });
+
+  // Handle equals button
+  document.querySelector('.equals').addEventListener('click', () => {
+    if (currentInput === '' || previousInput === '' || !operation) return;
+    calculate();
+    operation = null;
+  });
+
+  // Handle clear button
+  document.getElementById('clear').addEventListener('click', () => {
+    currentInput = '';
+    previousInput = '';
+    operation = null;
+    updateDisplay();
+  });
+
+  function calculate() {
+    const prev = parseFloat(previousInput);
+    const current = parseFloat(currentInput);
+    if (isNaN(prev) || isNaN(current)) return;
+    let result;
+    switch (operation) {
+      case '+':
+        result = prev + current;
+        break;
+      case '-':
+        result = prev - current;
+        break;
+      case '*':
+        result = prev * current;
+        break;
+      case '/':
+        if (current === 0) {
+          alert('Division by zero is not allowed');
+          return;
+        }
+        result = prev / current;
+        break;
+      default:
+        return;
+    }
+    currentInput = result.toString();
+    previousInput = '';
+    updateDisplay();
+  }
+
+  // Initialize display
+  updateDisplay();
+</script>
+
+</body>
+</html>
